@@ -1,0 +1,668 @@
+<!-- Your custom script -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<table class="table table-striped table-bordered table-sm" cellspacing="0" width="100%" id="candidate_list" style="padding-top:2%">
+  <thead>
+    <th>Name</th>
+    <th>Added By</th>
+    <th>Report Generated</th>
+    <th>File Type</th>
+    <th>Action</th>
+  </thead>
+  <tbody>
+    {% if master_entries %} 
+    
+    {% for master_entry in master_entries %}
+    {% if master_entry.candidate !=None %}
+      {% if master_entry.candidate.video_analysis_status == "inprogress" %}
+        {% set flag_in_progress = True %}
+      {% endif %}
+    {% endif %}
+    {% endfor %}
+    
+    
+    {% for master_entry in master_entries %}
+    {% if master_entry.candidate != None %}
+    <tr>
+      <td>{{ master_entry.candidate.name or 'N/A' }}</td>
+      <td>{{ master_entry.candidate.user_data().full_name or 'N/A' }}</td>
+      <td>
+        {% if master_entry.candidate.is_report_generated %}
+        <span class="badge generated">YES</span>
+        {% else %}
+        <span class="badge not_generated">NO</span>
+        {% endif %}
+      </td>
+      <td>{% if master_entry.type =='video' %}
+        <i class="fa fa-play-circle-o" style="font-size:36px;"></i>
+        {% endif %}
+      </td>
+      <td>
+        
+        <a
+          target="_blank"
+          href="/{{ master_entry.candidate.interview_video  }}"
+          class="btn btn-theme-white btn-sm"
+          >View Video</a
+        >
+        <!--         <a
+          target="_blank"
+          href="{{ master_entry.candidate.report_url }}"
+          class="btn btn-theme-white btn-sm"
+          >Check Report</a
+        > -->
+        {% if master_entry.candidate.is_report_generated %}
+        <a
+          href="{{ url_for('interview_analyzer.view_report', id=master_entry.candidate.id) }}"
+          class="btn btn-theme-white btn-sm"
+          >View Report</a
+        >
+        <a
+          href="#"
+          class="btn btn-theme-white btn-sm"
+          data-toggle="modal"
+          data-target="#deleteModal{{master_entry.id}}"
+        >
+          Delete</a
+        >
+
+        <!-- The Modal -->
+        <div
+          class="modal fade"
+          id="deleteModal{{master_entry.id}}"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="deleteModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">
+                  Confirm Delete
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete this item?
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Cancel
+                </button>
+                <a
+                  href="{{ url_for('delete_route', item_id=master_entry.id) }}"
+                  class="btn btn-danger"
+                  >Delete</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        {% else %} {% if master_entry.candidate.video_analysis_status == "completed" %}
+        <a
+          href="{{ url_for('interview_analyzer.generate_report_command') }}?candidate={{ master_entry.candidate.id }}"
+          class="btn btn-theme-white btn-sm gr_loader"
+          >Generate Report</a
+        >
+        <a
+        href="#"
+        class="btn btn-theme-white btn-sm"
+        data-toggle="modal"
+        data-target="#deleteModal{{master_entry.id}}"
+      >
+        Delete</a
+      >
+      <!-- The Modal -->
+      <div
+        class="modal fade"
+        id="deleteModal{{master_entry.id}}"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="deleteModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabel">
+                Confirm Delete
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to delete this item?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <a
+                href="{{ url_for('delete_route', item_id=master_entry.id) }}"
+                class="btn btn-danger"
+                >Delete</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+        {% endif %} {% endif %} {% if master_entry.candidate.video_analysis_status ==
+        "pending" %}
+        
+        {% if flag_in_progress %}
+          {% set classname = "" %}
+        {% else %}
+          {% set classname = "analyze-this" %}
+        {% endif %}
+        <a
+          href="#"
+          data-candidate="{{ master_entry.candidate.id }}"
+          class="btn btn-theme-white btn-sm {{classname}}"
+          >Analyze Video</a
+        >
+        <a
+          href="#"
+          class="btn btn-theme-white btn-sm"
+          data-toggle="modal"
+          data-target="#deleteModal{{master_entry.id}}"
+        >
+          Delete</a
+        >
+        <!-- The Modal -->
+        <div
+          class="modal fade"
+          id="deleteModal{{master_entry.id}}"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="deleteModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">
+                  Confirm Delete
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete this item?
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Cancel
+                </button>
+                <a
+                  href="{{ url_for('delete_route', item_id=master_entry.id) }}"
+                  class="btn btn-danger"
+                  >Delete</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %} {% if master_entry.candidate.video_analysis_status == "inprogress" %}
+        Analyzing Please wait... for 15 -30 minutes {% endif %}
+        
+      </td>
+    </tr>
+    {% elif master_entry.transcript != None %} 
+    
+    <tr>
+      <td>{{ master_entry.transcript.name or 'N/A' }}</td>
+      <td>{{ master_entry.transcript.user_data().full_name or 'N/A' }}</td>
+      <td>
+        {% if master_entry.transcript.transcript_analysis_status=='completed' %}
+        <span class="badge generated">YES</span>
+        {% else %}
+        <span class="badge not_generated">NO</span>
+        {% endif %}
+      </td>
+      <td>{% if master_entry.type =='transcript' %}
+        <i class="fa fa-file-text" style="font-size:32px;"></i>
+        {% endif %}
+      </td>
+      <td>
+        <a
+        target="_blank"
+        href="/{{ master_entry.transcript.transcript  }}"
+        class="btn btn-theme-white btn-sm"
+        >View Transcript</a
+        >
+        {% if master_entry.transcript.transcript_analysis_status == "completed" %}
+        <a
+          href="{{ url_for('interview_analyzer.view_transcript_report', id=master_entry.transcript.id) }}"
+          class="btn btn-theme-white btn-sm"
+          >View Report</a
+        >
+        {% endif %}
+        {% if master_entry.transcript.transcript_analysis_status == "pending" %}
+        <a
+          href="#"
+          data-transcript="{{ master_entry.transcript.id }}"
+          class="btn btn-theme-white btn-sm analyze-this-transcript"
+          >Analyze Transcript</a
+        >
+        {% endif %}
+
+        <a
+        href="#"
+        class="btn btn-theme-white btn-sm"
+        data-toggle="modal"
+        data-target="#deleteModal{{master_entry.id}}"
+      >
+        Delete</a
+      >
+      <!-- The Modal -->
+      <div
+        class="modal fade"
+        id="deleteModal{{master_entry.id}}"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="deleteModalLabelTranscript"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabelTranscript">
+                Confirm Delete
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to delete this item?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <a
+                href="{{ url_for('delete_route', item_id=master_entry.id) }}"
+                class="btn btn-danger"
+                >Delete</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      </td>
+    </tr>
+    {% else %}
+    {% endif %}
+    {% endfor %} 
+    {% else %}
+    <tr>
+      <td colspan="4">No Videos or Transcripts Found.</td>
+    </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+<div class="modal" id="confirmation_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Please confirm if the below image is of the Interviewer.</h3>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="img_wrapper"></div>
+        <div class="button_wrapper">
+          <a href="#" class="btn-success">Yes, I confirm</a>
+          <a href="#" class="btn-failed">No, try again</a>
+        </div>
+        <div class="confirmation-success d-none">
+          <h2>Thank you for the confirmation.</h2>
+          <p>We are now analyzing the video, The process will take a while, so why not take a break and enjoy a cup of coffee?</p>
+          <div class="loader_wrapper_modal">
+            <div class="loader">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                style="margin: auto; display: block" width="200px" height="200px" viewBox="0 0 100 100"
+                preserveAspectRatio="xMidYMid">
+                <circle cx="30" cy="50" fill="#373450" r="20">
+                  <animate attributeName="cx" repeatCount="indefinite" dur="1s" keyTimes="0;0.5;1" values="30;70;30"
+                    begin="-0.5s"></animate>
+                </circle>
+                <circle cx="70" cy="50" fill="#ea1b3d" r="20">
+                  <animate attributeName="cx" repeatCount="indefinite" dur="1s" keyTimes="0;0.5;1" values="30;70;30" begin="0s">
+                  </animate>
+                </circle>
+                <circle cx="30" cy="50" fill="#373450" r="20">
+                  <animate attributeName="cx" repeatCount="indefinite" dur="1s" keyTimes="0;0.5;1" values="30;70;30"
+                    begin="-0.5s"></animate>
+                  <animate attributeName="fill-opacity" values="0;0;1;1" calcMode="discrete" keyTimes="0;0.499;0.5;1" dur="1s"
+                    repeatCount="indefinite"></animate>
+                </circle>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="confirmation_modal_transcript">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Please confirm Which one is  Interviewer.</h3>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="attendees_content"></div>
+        <div class="confirmation-success d-none">
+          <h2>Thank you for the confirmation.</h2>
+          <p>We are now analyzing the transcript, The process will take a while, so why not take a break and enjoy a cup of coffee?</p>
+          <div class="loader_wrapper_modal">
+            <div class="loader">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                style="margin: auto; display: block" width="200px" height="200px" viewBox="0 0 100 100"
+                preserveAspectRatio="xMidYMid">
+                <circle cx="30" cy="50" fill="#373450" r="20">
+                  <animate attributeName="cx" repeatCount="indefinite" dur="1s" keyTimes="0;0.5;1" values="30;70;30"
+                    begin="-0.5s"></animate>
+                </circle>
+                <circle cx="70" cy="50" fill="#ea1b3d" r="20">
+                  <animate attributeName="cx" repeatCount="indefinite" dur="1s" keyTimes="0;0.5;1" values="30;70;30" begin="0s">
+                  </animate>
+                </circle>
+                <circle cx="30" cy="50" fill="#373450" r="20">
+                  <animate attributeName="cx" repeatCount="indefinite" dur="1s" keyTimes="0;0.5;1" values="30;70;30"
+                    begin="-0.5s"></animate>
+                  <animate attributeName="fill-opacity" values="0;0;1;1" calcMode="discrete" keyTimes="0;0.499;0.5;1" dur="1s"
+                    repeatCount="indefinite"></animate>
+                </circle>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+$(document).ready(function() {
+
+  $(".analyze-this-transcript").click(function (event) {
+      event.preventDefault();
+      $(".loader_wrapper").removeClass("d-none");
+
+      var transcriptId = $(this).data('transcript');
+      console.log(transcriptId)
+      $.ajax({
+        url: '{{ url_for('interview_analyzer.confirm_transcript_interviewer') }}',
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ transcript_id: transcriptId }),
+        success: function (response) {
+          if (response) {
+            var res = JSON.parse(response);
+            console.log(res)
+            if (res.success) {
+              $(".loader_wrapper").addClass("d-none");
+                        // Clear existing content
+               $("#confirmation_modal_transcript").find(".attendees_content").html("");
+
+                var attendees = res.attendees;
+                var buttonWrapper = $("<div>", { class: "button_wrapper" });
+
+                // Loop through response and create links
+                attendees.forEach(function (attendee) {
+                  var linkElement = $("<a>", {
+                    href: '#',
+                    class: "btn btn-outline-dark attendee-btn",
+                    text: attendee,
+                    transcript_id: transcriptId,
+                    transcript_attendee: attendee
+                  });
+
+                  buttonWrapper.append(linkElement);
+                });
+
+                // Replace the content of .attendees_content with the new button wrapper
+                $("#confirmation_modal_transcript").find(".attendees_content").replaceWith(buttonWrapper);
+              /* $("#confirmation_modal_transcript").find(".attendees_content").html("dsadsadsd"); */
+              $("#confirmation_modal_transcript").modal("show");
+              //reload_candidate_list();
+            }
+          }
+        },
+      });
+    });
+
+    $(document).on("click", "#confirmation_modal_transcript .btn-close", function (e) {
+      e.preventDefault();
+      $("#confirmation_modal_transcript").modal("hide");
+    });
+
+  // Attach a click event handler to links with the 'analyze-this' class
+    $(document).on("click", "#confirmation_modal_transcript .attendee-btn", function (event) {
+        event.preventDefault(); // Prevent the default link behavior
+        // Disable the link
+        // Get the candidate ID from the 'data-candidate' attribute
+        var transcriptId = $(this).attr('transcript_id');
+        var transcript_attendee = $(this).attr('transcript_attendee');
+        // Perform your AJAX request here
+        // console.log(transcriptId,transcript_attendee)
+
+
+        $('.analyze-this-transcript').each(function (e, t) {
+          if (jQuery(t).data('transcript') == transcriptId) {
+            $(t).css({ "pointer-events": "none", opacity: "0.6" });
+            $(t).text("Analyzing");
+          } else {
+            $(t).prop('disabled', true)
+          }
+        })
+   
+      $("#confirmation_modal_transcript .confirmation-success").removeClass("d-none");
+      $('#confirmation_modal_transcript .button_wrapper').hide()
+      $('#confirmation_modal_transcript .modal-header').html("")
+         $.ajax({
+        url: '{{ url_for('interview_analyzer.analyze_transcript') }}', // Replace with your actual AJAX endpoint URL
+        type: 'POST', // or 'GET', depending on your requirements
+        contentType: 'application/json', // Set the content type to JSON
+        data: JSON.stringify({ transcript_id: transcriptId ,interviewer:transcript_attendee}), // Convert data to JSON format
+        success: function(response) {
+            // Handle the AJAX response here
+            alert("Transcript Analysis Complete!")
+            location.reload(true)
+            $(".loader_wrapper").addClass("d-none");
+            reload_candidate_list();
+            // You can update the UI or do other operations with the response data
+        },
+        error: function(xhr, status, error) {
+            // Handle AJAX errors here
+            console.error('AJAX error', status, error);
+        }
+        });
+
+    });
+});
+</script>
+<script>
+  function reload_candidate_list_table() {
+    $.ajax({
+      type: "GET",
+      url: '{{ url_for('interview_analyzer.fetch_candidate_list') }}',
+      dataType: "html",
+      success: function (response) {
+        $(".table_div").html(response);
+      },
+    });
+  }
+
+  $(document).ready(function () {
+    $(".analyze-this").click(function (event) {
+      event.preventDefault();
+      $(".loader_wrapper").removeClass("d-none");
+
+      var candidateId = $(this).data("candidate");
+      $.ajax({
+        url: '{{ url_for('interview_analyzer.confirm_interviewer') }}',
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ candidate_id: candidateId }),
+        success: function (response) {
+          if (response) {
+            var res = JSON.parse(response);
+            if (res.success) {
+              $(".loader_wrapper").addClass("d-none");
+              var img_html = "<img src='/" + res.image + "' />";
+              $("#confirmation_modal").find(".img_wrapper").html(img_html);
+              $("#confirmation_modal").find(".btn-success").data('candidate',candidateId);
+              $("#confirmation_modal").find(".btn-failed").data('candidate',candidateId);
+              $('#confirmation_modal .btn-failed').show()
+              $("#confirmation_modal").modal("show");
+              //reload_candidate_list();
+            }else{
+              alert("Video quality is poor. Please upload a different video for re-analysis.")
+              location.reload(true)
+            }
+          }
+        },
+      });
+    });
+
+    $(document).on("click", "#confirmation_modal .btn-success", function (e) {
+      e.preventDefault();
+      var candidateId = $(this).data("candidate");
+      var selected_image = $(this).parent().prev('.img_wrapper').find('img').attr('src')
+      confirmed_interviewer(candidateId, selected_image);
+    });
+
+    $(document).on("click", "#confirmation_modal .btn-failed", function (e) {
+      e.preventDefault();
+      var candidateId = $(this).data("candidate");
+      try_again_interviewer(candidateId);
+    });
+
+    $(document).on("click", "#confirmation_modal .btn-close", function (e) {
+      e.preventDefault();
+      $("#confirmation_modal").modal("hide");
+    });
+  });
+
+  function confirmed_interviewer(candidateId, selected_image) {
+
+
+    $('.analyze-this').each(function (e, t) {
+      if (jQuery(t).data('candidate') == candidateId) {
+        $(t).css({ "pointer-events": "none", opacity: "0.6" });
+        $(t).text("Analyzing");
+      } else {
+        $(t).prop('disabled', true)
+      }
+    })
+   
+    $(".confirmation-success").removeClass("d-none");
+    $(".img_wrapper").hide()
+    $('.button_wrapper').hide()
+    $('.modal-header').html("")
+    // Delay the page reload by 10 seconds (10000 milliseconds)
+    setTimeout(function() {
+        location.reload();
+    }, 10000);
+    $.ajax({
+      url: '{{ url_for('interview_analyzer.run_tasks') }}',
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ candidate_id: candidateId, selected_image }),
+      success: function (response) {
+        if (response) {
+          var res = JSON.parse(response);
+          if (res.success) {
+            location.reload(true)
+            $(".loader_wrapper").addClass("d-none");
+            reload_candidate_list();
+            
+          }
+        }
+      },
+    });
+  }
+
+  function try_again_interviewer(candidateId){
+      $.ajax({
+        url: '{{ url_for('interview_analyzer.confirm_interviewer') }}',
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ sendCandidate: true, candidate_id: candidateId }),
+        success: function (response) {
+          if (response) {
+            var res = JSON.parse(response);
+            if (res.success) {
+              $(".loader_wrapper").addClass("d-none");
+              var img_html = "<img src='/" + res.image + "' />";
+              $("#confirmation_modal").find(".img_wrapper").html(img_html);
+              $("#confirmation_modal").modal("show");
+              $('#confirmation_modal .btn-failed').hide()
+            }
+          }
+        },
+      });
+  }
+</script>
+<script>
+  $(document).ready(function () {
+  $('#candidate_list').DataTable();
+  $('.dataTables_length').addClass('bs-select');
+});
+</script>

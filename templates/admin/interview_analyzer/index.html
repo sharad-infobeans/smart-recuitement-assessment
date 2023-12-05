@@ -1,0 +1,169 @@
+{% extends 'layouts/admin/dashboard/base.html' %} {% block page_title %} Smart
+Interview Assessment {% endblock %} {% block page_body_title %}  {% endblock %} {% block body_block %}
+
+<!-- DataTables CSS -->
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css"
+/>
+
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js" defer></script>
+<style>
+.css-1ikvom0{
+    font-size: 13px;
+    border: 1px solid rgb(183, 187, 208);
+    border-radius: 2px;
+    padding: 3px 11px;
+    color: rgb(52, 58, 79);
+    line-height: 1.75;
+    font-weight: 500;
+    background-color: #fff;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<div class="row">
+  <div class="card mt-4">
+    <div class="card-body">
+      <div class="m-4">
+        <!-- Using Flexbox to align elements in a row -->
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <h4 style="color: #000;margin:0px">Smart Interview Assessment</h4>
+          <!-- Button with file input and icon -->
+            <div>
+            <button class="file-upload-button css-1ikvom0" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+            <a href="{{ url_for('interview_analyzer.interview_transcript_upload_file') }}"><button class="file-upload-button css-1ikvom0"><i class="fas fa-upload"></i> Import Google Meet Transcript</button></a>
+            <a href="{{ url_for('interview_analyzer.interview_video_upload_file') }}"><button class="file-upload-button css-1ikvom0"><i class="fas fa-upload"></i> Import Video from file</button></a>
+            </div>
+          </div>
+        <div class="mainList">
+        <h5 style="color: #000;margin-top: 30px;"> Interviews</h5>
+        <div class="table_div"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="test" id="test_rock"></div>
+{% endblock %} {% block body_scripts %}
+<script>
+  function reload_candidate_list() {
+    $.ajax({
+      type: "GET",
+      url: '{{ url_for('interview_analyzer.fetch_candidate_list') }}',
+      dataType: "html",
+      success: function (response) {
+        $(".table_div").html(response);
+      },
+    });
+  }
+
+
+  $(document).ready(function () {
+    reload_candidate_list();
+    $(document).on('click','.gr_loader',function(e){
+        e.preventDefault()
+      $('.loader_wrapper').removeClass('d-none')
+      const currentLink = $(this).attr("href");
+
+// Simulate an asynchronous operation (replace this with your actual logic)
+    setTimeout(function() {
+        // After the operation is complete, navigate to the URL
+        window.location.href = currentLink;
+    }, 2000); // Simulated 2-second delay (adjust as needed)
+
+    })
+  });
+
+  $(document).on('click','.upload_video_btn',function(){
+     var name = document.getElementById('candidate_name').value;
+      var fileInput = document.getElementById('file');
+      var file = fileInput.files[0]; // Get the first selected file (if any)
+
+      if (name !== '' && file) {
+        $('.loader_wrapper').removeClass('d-none');
+      }
+  })
+
+  setInterval(function() {
+    reload_candidate_list();
+  }, 420000);
+
+</script>
+
+{% endblock %} {% block head_styles %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static',filename='admin/assets/css/dropzone.css') }}"
+  type="text/css"
+/>
+<style>
+  .table thead th {
+    background-color: #373450;
+    color: #ffffff !important;
+  }
+</style>
+<div class="loader_wrapper d-none">
+  <div class="loader">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      style="margin: auto; display: block"
+      width="200px"
+      height="200px"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid"
+    >
+      <circle cx="30" cy="50" fill="#373450" r="20">
+        <animate
+          attributeName="cx"
+          repeatCount="indefinite"
+          dur="1s"
+          keyTimes="0;0.5;1"
+          values="30;70;30"
+          begin="-0.5s"
+        ></animate>
+      </circle>
+      <circle cx="70" cy="50" fill="#ea1b3d" r="20">
+        <animate
+          attributeName="cx"
+          repeatCount="indefinite"
+          dur="1s"
+          keyTimes="0;0.5;1"
+          values="30;70;30"
+          begin="0s"
+        ></animate>
+      </circle>
+      <circle cx="30" cy="50" fill="#373450" r="20">
+        <animate
+          attributeName="cx"
+          repeatCount="indefinite"
+          dur="1s"
+          keyTimes="0;0.5;1"
+          values="30;70;30"
+          begin="-0.5s"
+        ></animate>
+        <animate
+          attributeName="fill-opacity"
+          values="0;0;1;1"
+          calcMode="discrete"
+          keyTimes="0;0.499;0.5;1"
+          dur="1s"
+          repeatCount="indefinite"
+        ></animate>
+      </circle>
+    </svg>
+  </div>
+</div>
+<script>
+function goBack() {
+  var baseURL = window.location.protocol + '//' + window.location.host;
+  window.location.href = baseURL;
+}
+</script>
+{% endblock %}
+

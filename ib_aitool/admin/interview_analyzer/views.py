@@ -1148,8 +1148,11 @@ def analyze_transcript():
     db.session.commit() 
     main_conversation=[]
     if transcript_data.transcript:
-        main_conversation = extract_main_conversation(transcript_data.transcript)   
+        main_conversation = extract_main_conversation(transcript_data.transcript)  
+    timestamp_pattern = r"\d{2}:\d{2}:\d{2}"     
     for line in main_conversation:
+        if re.match(f"^{timestamp_pattern}$", line.strip()):
+            continue  # Skip lines with only timestamps
         speaker, interview_transcript = line.split(': ', 1)  # Split at the first ": "
         transcript_emotions=get_text_sentiments(interview_transcript)
         if transcript_emotions:

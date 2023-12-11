@@ -19,6 +19,7 @@ class Candidate(db.Model):
     overall_interviewer_audio_report=db.Column(db.Text,default=None)
     overall_candidate_audio_report=db.Column(db.Text,default=None)
     video_analysis_status=db.Column(db.String(64),nullable=False,default='pending')
+    is_logged_in = db.Column(db.Boolean,default=False)
 
     def __str__(self):
         return str(self.name)
@@ -37,6 +38,7 @@ class Candidate(db.Model):
         self.overall_interviewer_audio_report = overall_interviewer_audio_report
         self.overall_candidate_audio_report = overall_candidate_audio_report
         self.video_analysis_status = video_analysis_status
+        self.is_logged_in = is_logged_in
 
     def user_data(self):
         user = User.query.get(self.added_by)

@@ -36,6 +36,10 @@
   z-index: auto;
 }
 
+.content-wrapper {
+  background-color: #f7f7fd;
+}
+
 /*
 * Content
 ******************************************************************************/
@@ -132,22 +136,28 @@
 
 .logout-btn {
   padding: 0.5rem 1.5rem;
-  color: #fff;
   font-size: 12px;
   border-radius: 10px;
-  background-color: #dc3545;
-  border-color: #dc3545;
-  text-transform: uppercase;
 }
-
-.logout-btn:hover {
-  background-color: #c82333 !important;
-  border-color: #bd2130 !important;
-  transform: translateY(0px);
+.logout-btn svg {
+  stroke: rgb(255, 255, 255);
+  stroke-width: 0.7px;
+  fill: currentColor;
+  width: 28px;
+  color: rgb(52, 58, 79);
+  font-size: 28px;
 }
 .navbar.navbar-expand-lg {
-  height: 76px;
-  padding: 0.5rem 1rem;
+  height: 67px;
+  padding: 24px;
+}
+
+.navbar.navbar-expand-lg .container-fluid {
+  padding: 0 !important;
+}
+
+.navbar-brand img {
+  width: 114px;
 }
 
 .container-fluid {
@@ -213,6 +223,14 @@ footer.navigation {
   margin-top: 20px;
 }
 
+footer img {
+  height: 15px;
+}
+
+footer .divider {
+  margin: 8px;
+}
+
 #confirmation_modal .modal-dialog {
   max-width: 60%;
   padding: 20px;
@@ -272,8 +290,6 @@ footer.navigation {
   margin: -81px -40px 0 0;
   transform: none;
 }
-
-
 
 #confirmation_modal_transcript .modal-dialog {
   max-width: 33%;

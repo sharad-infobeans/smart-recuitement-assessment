@@ -51,16 +51,25 @@ def create():
 def create_user():
 	data = request.get_json()
 	if data:
-		user = User(
-		email=data['email'],
-		username=data['username'],
-		role_id=2,
-		password="",
-		full_name=data['full_name'],
-		is_logged_in=data['is_logged_in'])
 
-	db.session.add(user)
-	db.session.commit()
+		email_condition = User.email == data['email']
+		user = User.query.filter(email_condition).all()
+
+		if user:
+			user.is_logged_in = 1
+			db.session.commit()
+			return True
+		else:
+			user = User(
+			email=data['email'],
+			username=data['username'],
+			role_id=2,
+			password="",
+			full_name=data['full_name'],
+			is_logged_in=data['is_logged_in'])
+			db.session.add(user)
+			db.session.commit()
+				
 	return jsonify({'status':'success'})
 
 @user_blueprint.route('/update/<int:id>',endpoint='update',methods=['GET','POST'])

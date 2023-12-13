@@ -56,9 +56,9 @@ def create_user():
 		user = User.query.filter(email_condition).all()
 
 		if user:
-			user.is_logged_in = 1
-			db.session.commit()
-			return True
+			for user_data in user:
+				user_data.is_logged_in = 1
+				db.session.commit()
 		else:
 			user = User(
 			email=data['email'],
@@ -69,7 +69,7 @@ def create_user():
 			is_logged_in=data['is_logged_in'])
 			db.session.add(user)
 			db.session.commit()
-				
+
 	return jsonify({'status':'success'})
 
 @user_blueprint.route('/update/<int:id>',endpoint='update',methods=['GET','POST'])

@@ -1,22 +1,22 @@
 from ib_aitool import app
 from ib_aitool.database import db
 from flask import Blueprint,render_template,flash,redirect,url_for,abort
-from flask_login import login_required
+from decorators import xr_login_required
 from ib_aitool.database.models.Permission import Permission
 from ib_aitool.database.models.RolesPermission import RolesPermission
 from ib_aitool.admin.permissions.forms import PermissionForm
 from ib_aitool.admin.decorators import has_permission
 
 permissions_blueprint = Blueprint('permissions',__name__)
-@permissions_blueprint.route('/')
-@login_required
+@permissions_blueprint.route('/',endpoint="index")
+@xr_login_required
 @has_permission('Permissions')
 def index():
 	permissions = Permission.query.order_by('id').all()
 	return render_template('admin/permissions/index.html',permissions=permissions)
 
-@permissions_blueprint.route('/create',methods=['GET','POST'])
-@login_required
+@permissions_blueprint.route('/create',methods=['GET','POST'],endpoint="create")
+@xr_login_required
 @has_permission('Permissions Create')
 def create():
 	form = PermissionForm()
@@ -31,8 +31,8 @@ def create():
 	return render_template('admin/permissions/create.html',form=form)
 
 
-@permissions_blueprint.route('/update/<int:id>',methods=['GET','POST'])
-@login_required
+@permissions_blueprint.route('/update/<int:id>',methods=['GET','POST'],endpoint="update")
+@xr_login_required
 @has_permission('Permissions Update')
 def update(id):
 	permission = Permission.query.get(id)
@@ -48,8 +48,8 @@ def update(id):
 	return render_template('admin/permissions/create.html',form=form,permission=permission)
 
 
-@permissions_blueprint.route('/delete/<int:id>',methods=['GET'])
-@login_required
+@permissions_blueprint.route('/delete/<int:id>',endpoint='delete',methods=['GET'])
+@xr_login_required
 @has_permission('Permissions Delete')
 def delete(id):
 	permission = Permission.query.get(id)

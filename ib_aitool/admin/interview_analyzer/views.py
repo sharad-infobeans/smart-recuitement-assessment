@@ -6,14 +6,14 @@ import subprocess
 from ib_aitool import app
 from ib_tool import BASE_DIR, mail
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, Markup, session
-from flask_login import login_required, current_user
+from flask_login import login_required
 from ib_aitool.admin.decorators import has_permission
 from ib_aitool.database.models.CandidateModel import Candidate
 from ib_aitool.database.models.TranscriptModel import Transcript
 from ib_aitool.database.models.VideoProcessModel import VideoProcess
 from ib_aitool.database.models.TranscriptProcessModel import TranscriptProcess
 from ib_aitool.database.models.MasterTableModel import MasterTable
-
+from decorators import xr_login_required,current_user
 import math
 from moviepy.editor import VideoFileClip
 from ib_aitool.database import db
@@ -59,23 +59,24 @@ tfidf = pickle.load(open(os.path.join(os.path.dirname(
 question_technical_identification_model = pickle.load(open(os.path.join(os.path.dirname(
     __file__), 'models', 'technical-questions-model.pkl'), 'rb'))
 
-@products_blueprint.route('/')
-@login_required
+@products_blueprint.route('/',endpoint='index')
+@xr_login_required
 @has_permission('Interview Analyzer')
 def index():
     return render_template('admin/interview_analyzer/index.html')
 
 
-@products_blueprint.route('/fetch-candidate-list')
+@products_blueprint.route('/fetch-candidate-list',endpoint='fetch_candidate_list')
 def fetch_candidate_list():
-    if str(current_user.role()) == 'SuperAdmin':
+    current_user_ob = current_user()
+    if (current_user_ob['role']) == 1:
         # If the current user is a superadmin, list all candidates
         candidates = Candidate.query.order_by(Candidate.id).all()
         master_entries = MasterTable.query.order_by(MasterTable.id).all()
     else:
         # If the current user is not a superadmin, list candidates added by them
-        candidates = Candidate.query.filter_by(added_by=current_user.id).order_by(Candidate.id).all()
-        master_entries = MasterTable.query.filter_by(added_by=current_user.id).order_by(MasterTable.id).all()
+        candidates = Candidate.query.filter_by(added_by=current_user_ob['id']).order_by(Candidate.id).all()
+        master_entries = MasterTable.query.filter_by(added_by=current_user_ob['id']).order_by(MasterTable.id).all()
 
     return render_template('admin/interview_analyzer/candidate_list.html', candidates=candidates,master_entries=master_entries)
 
@@ -167,22 +168,24 @@ def upload_transcript():
     return None
 
 
-@products_blueprint.route('/upload_video_file')
-@login_required
+@products_blueprint.route('/upload_video_file',endpoint='interview_video_upload_file')
+@xr_login_required
 @has_permission('Interview Analyzer')
 def interview_video_upload_file():
     return render_template('admin/interview_analyzer/upload_video_file.html')
 
-@products_blueprint.route('/upload_transcript_file')
-@login_required
+@products_blueprint.route('/upload_transcript_file',endpoint='interview_transcript_upload_file')
+@xr_login_required
 @has_permission('Interview Analyzer')
 def interview_transcript_upload_file():
     return render_template('admin/interview_analyzer/upload_transcript_file.html')
 
-@products_blueprint.route('upload-video', methods=['POST'])
-@login_required
+@products_blueprint.route('upload-video', methods=['POST'],endpoint='interview_video_upload')
+@xr_login_required
 @has_permission('Interview Analyzer')
 def interview_video_upload():
+    current_user_ob = current_user()
+
     if request.method == 'POST':
         name = request.form.get('candidate_name')
         video_url = upload_video()
@@ -213,11 +216,11 @@ def interview_video_upload():
                 audio_file = None
 
             candidate = Candidate(
-                name=name, interview_video=video_url, interview_audio=audio_output_path, added_by=current_user.id)
+                name=name, interview_video=video_url, interview_audio=audio_output_path, added_by=current_user_ob['id'])
             db.session.add(candidate)
             db.session.commit()
             # Create a MasterTable instance and associate candidate and transcript IDs
-            new_master = MasterTable(candidate_table_id=candidate.id, transcript_table_id=None,type='video',added_by=current_user.id)
+            new_master = MasterTable(candidate_table_id=candidate.id, transcript_table_id=None,type='video',added_by=current_user_ob['id'])
             db.session.add(new_master)
             db.session.commit()
             message = 'Candidate Added Successfully.'
@@ -227,10 +230,11 @@ def interview_video_upload():
         return redirect(url_for('interview_analyzer.index'))
     raise Exception('Invalid Method')
 
-@products_blueprint.route('upload-transcript', methods=['POST'])
-@login_required
+@products_blueprint.route('upload-transcript', methods=['POST'],endpoint="interview_transcript_upload")
+@xr_login_required
 @has_permission('Interview Analyzer')
 def interview_transcript_upload():
+    current_user_ob = current_user()
     if request.method == 'POST':
         title = request.form.get('interview_title')
         transcript_url = upload_transcript()
@@ -245,10 +249,10 @@ def interview_transcript_upload():
 
         if title and transcript_url:
             transcript = Transcript(
-                name=title, transcript=transcript_url, added_by=current_user.id)
+                name=title, transcript=transcript_url, added_by=current_user_ob['id'])
             db.session.add(transcript)
             db.session.commit()
-            new_master = MasterTable(candidate_table_id=None, transcript_table_id=transcript.id,type='transcript',added_by=current_user.id)
+            new_master = MasterTable(candidate_table_id=None, transcript_table_id=transcript.id,type='transcript',added_by=current_user_ob['id'])
             db.session.add(new_master)
             db.session.commit()
             message = 'Candidate Added Successfully.'
@@ -259,8 +263,8 @@ def interview_transcript_upload():
     raise Exception('Invalid Method')
 
 
-@products_blueprint.route('/generate-report-command')
-@login_required
+@products_blueprint.route('/generate-report-command',endpoint="generate_report_command")
+@xr_login_required
 @has_permission('Interview Analyzer')
 def generate_report_command():
     candidate_id = request.args.get('candidate')
@@ -673,8 +677,8 @@ def text_analysis(paragraph):
 
 
 
-@products_blueprint.route('/view-reports/<id>')
-@login_required
+@products_blueprint.route('/view-reports/<id>',endpoint="view_report")
+@xr_login_required
 @has_permission('Interview Analyzer')
 def view_report(id):
     candidate = Candidate.query.get(id)
@@ -698,8 +702,8 @@ def view_report(id):
                            overall=overall, analysis_data=analysis,interviewer_total_time=interviewer_total_time_duration,candidate_total_time=candidate_total_time_duration, interview_total_tech_time=total_technical_discussion_string,overall_discussion=overall_discussion, technical_question_count=technical_question_count, overall_questions_count=overall_questions_count)
 
 
-@products_blueprint.route('/view-transcript-reports/<id>')
-@login_required
+@products_blueprint.route('/view-transcript-reports/<id>',endpoint="view_transcript_report")
+@xr_login_required
 @has_permission('Interview Analyzer')
 def view_transcript_report(id):
     tdata = TranscriptProcess.get_transcripts(id)
@@ -763,7 +767,7 @@ def extract_main_conversation(filename):
 
     return main_conversation
 
-@products_blueprint.route('/confirm_transcript_interviewer', methods=['POST'])
+@products_blueprint.route('/confirm_transcript_interviewer', methods=['POST'],endpoint="confirm_transcript_interviewer")
 def confirm_transcript_interviewer():
     id = request.json.get('transcript_id')
     transcript_data = Transcript.query.get(id)
@@ -917,7 +921,7 @@ def analyze_video(queue, candidate_id, selected_image):
         print('Part 1 completed')  # Debugging statement
 
 
-@products_blueprint.route('/confirm_interviewer', methods=['POST'])
+@products_blueprint.route('/confirm_interviewer', methods=['POST'],endpoint="confirm_interviewer")
 def confirm_interviewer():
     data = Candidate.get_video_data(request.json.get('candidate_id'))
     if data is not None:
@@ -1069,7 +1073,7 @@ def save_overall_report_to_candidate_table(queue, candidate_id):
         print('Part 4 completed')  # Debugging statement
 
 
-@products_blueprint.route('/run_tasks_modify', methods=['GET', 'POST'])
+@products_blueprint.route('/run_tasks_modify', methods=['GET', 'POST'],endpoint="run_tasks_modify")
 def run_tasks_modify():
     candidate_id = request.json.get('candidate_id')
     selected_image = request.json.get('selected_image')
@@ -1086,7 +1090,7 @@ def run_tasks_modify():
     return jsonify({'result': final_result})
 
 
-@products_blueprint.route('/run_tasks', methods=['GET', 'POST'])
+@products_blueprint.route('/run_tasks', methods=['GET', 'POST'],endpoint="run_tasks")
 def run_tasks():
     candidate_id = request.json.get('candidate_id')
     selected_image = request.json.get('selected_image')
@@ -1139,7 +1143,7 @@ def run_tasks():
     return jsonify({'result': final_result})
 
 
-@products_blueprint.route('/analyze_transcript', methods=['GET', 'POST'])
+@products_blueprint.route('/analyze_transcript', methods=['GET', 'POST'],endpoint="analyze_transcript")
 def analyze_transcript():
     transcript_id = request.json.get('transcript_id')
     interviewer = request.json.get('interviewer')
@@ -1212,8 +1216,8 @@ def calculate_overall_transcript_report(data):
     text_sentiments_result = {key: round(value / data_report_count, 2) for key, value in o_text_report.items()}
     return text_sentiments_result
 
-@products_blueprint.route('/view-video/<id>')
-@login_required
+@products_blueprint.route('/view-video/<id>',endpoint="view_video")
+@xr_login_required
 @has_permission('Interview Analyzer')
 def view_video(id):
     candidate_data = Candidate.query.filter_by(id=id).first()
@@ -1427,7 +1431,7 @@ app.jinja_env.filters['get_timestamp_vclip_url'] = get_timestamp_video_clip
 app.jinja_env.filters['format_duration'] = format_time_duration
 
 
-@app.route('/delete_route/<int:item_id>')
+@app.route('/delete_route/<int:item_id>',endpoint="delete_route")
 def delete_route(item_id):
     try:
         master_entry = MasterTable.master_table_data(item_id)

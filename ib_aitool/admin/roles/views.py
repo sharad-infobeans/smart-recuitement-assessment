@@ -1,7 +1,7 @@
 from ib_aitool import app
 from ib_aitool.database import db
 from flask import Blueprint,render_template,redirect,flash,url_for,request
-from flask_login import login_required
+from decorators import xr_login_required
 from ib_aitool.admin.roles.forms import RoleForm
 from ib_aitool.database.models.Role import Role
 from ib_aitool.database.models.Permission import Permission
@@ -9,16 +9,16 @@ from ib_aitool.database.models.RolesPermission import RolesPermission
 from ib_aitool.admin.decorators import has_permission,has_role
 
 roles_blueprint = Blueprint('roles',__name__)
-@roles_blueprint.route('/')
-@login_required
+@roles_blueprint.route('/',endpoint="index")
+@xr_login_required
 @has_permission('Roles')
 def index():
 	roles = Role.query.order_by('id').all()
 	return render_template('admin/roles/index.html',**locals())
 
 
-@roles_blueprint.route('/create',methods=['GET','POST'])
-@login_required
+@roles_blueprint.route('/create',endpoint='create',methods=['GET','POST'])
+@xr_login_required
 @has_permission('Roles Create')
 def create():
 	form = RoleForm()
@@ -33,8 +33,8 @@ def create():
 	return render_template('admin/roles/create.html',form=form)
 
 
-@roles_blueprint.route('/update/<int:id>',methods=['GET','POST'])
-@login_required
+@roles_blueprint.route('/update/<int:id>',endpoint='update',methods=['GET','POST'])
+@xr_login_required
 @has_permission('Roles Update')
 def update(id):
 	role = Role.query.get(id)
@@ -50,8 +50,8 @@ def update(id):
 	return render_template('admin/roles/create.html',form=form,role=role)
 
 
-@roles_blueprint.route('/permissions/<int:id>',methods=['GET','POST'])
-@login_required
+@roles_blueprint.route('/permissions/<int:id>',methods=['GET','POST'],endpoint="permissions")
+@xr_login_required
 @has_permission('Can Permission Assigned')
 @has_role('SuperAdmin')
 def permissions(id):
@@ -83,8 +83,8 @@ def delete_role_permissions(check_permissions,permissions,role_id):
 				db.session.delete(role_permission)
 				db.session.commit()
 
-@roles_blueprint.route('/delete/<int:id>',methods=['GET'])
-@login_required
+@roles_blueprint.route('/delete/<int:id>',endpoint='delete',methods=['GET'])
+@xr_login_required
 @has_permission('Roles Delete')
 def delete(id):
 	role = Role.query.get(id)

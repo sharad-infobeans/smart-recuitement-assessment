@@ -1,13 +1,17 @@
-from flask import Blueprint, render_template,redirect,request,url_for,flash,abort
+from flask import Blueprint, render_template,redirect,request,url_for,flash,abort,make_response
 from ib_aitool import app
 from ib_aitool.auth.admin.forms import LoginForm,RegistrationForm
 from ib_aitool.database.models.User import User
-from flask_login import login_user,logout_user,login_required
+from flask_login import login_user,logout_user
 from flask_dance.contrib.google import google
 from ib_aitool.database import db
 from ib_aitool.database.models.Role import Role
+from decorators import xr_login_required,current_user
+import configparser
 
 auth_admin_blueprint = Blueprint('auth',__name__)
+config = configparser.ConfigParser()
+config.read('demo-config.ini')
 
 @auth_admin_blueprint.route('/login',methods=['GET','POST'])
 def admin_login():
@@ -55,7 +59,7 @@ def agent_login():
     return render_template('auth/admin/agent_login.html',form=form)
 
 @auth_admin_blueprint.route('/register',methods=['GET','POST'])
-@login_required
+@xr_login_required
 def admin_register():
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -77,8 +81,22 @@ def admin_forgot_password():
 
 @auth_admin_blueprint.route('/logout')
 def admin_logout():
-    logout_user()
-    return redirect(url_for('auth.admin_login'))
+    current_user_obj = current_user()
+
+    if current_user_obj is None:
+        return redirect(config.get('REACT', 'REACT_APP'))
+
+    user = User.query.get(current_user_obj['id'])
+
+    if user:
+        user.is_logged_in = 0
+        db.session.commit()
+        return True
+
+    resp = make_response(func(*args, **kwargs))
+    resp.set_cookie('auth-cookie', "")
+    return resp
+    return redirect(config.get('REACT', 'REACT_APP'))
 
 @auth_admin_blueprint.route('/google-login-verify')
 def google_login_verify():
@@ -106,4 +124,4 @@ def google_login_verify():
     return redirect(url_for('interview_analyzer.index'))
 
 
-app.register_blueprint(auth_admin_blueprint,url_prefix="/admin/auth")
+app.register_blueprint(auth_admin_blueprint,url_prefix="/admin/auth",endpoint="/admin/auth")

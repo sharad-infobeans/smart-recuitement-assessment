@@ -1,16 +1,17 @@
 from ib_aitool import app
-from flask import Blueprint,render_template,flash,redirect,url_for
-from flask_login import login_required,current_user
+from flask import Blueprint,render_template,flash,redirect,url_for,jsonify,request
+from flask_login import current_user
 from ib_aitool.database.models.User import User
 from ib_aitool.database.models.Role import Role
 from ib_aitool.admin.users.froms import UserForm
 from ib_aitool.database import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from ib_aitool.admin.decorators import has_permission
+from decorators import xr_login_required
 
 user_blueprint = Blueprint('users',__name__)
-@user_blueprint.route('/')
-@login_required
+@user_blueprint.route('/',endpoint="index")
+@xr_login_required
 @has_permission('Users')
 def index():
 	users = User.query.all()
@@ -23,8 +24,8 @@ def get_role_choices():
 	choices.extend([(role.id,role.name) for role in roles])
 	return choices
 
-@user_blueprint.route('/create',methods=['GET','POST'])
-@login_required
+@user_blueprint.route('/create',endpoint='create',methods=['GET','POST'])
+@xr_login_required
 @has_permission('Users Create')
 def create():
 	form = UserForm()
@@ -46,8 +47,24 @@ def create():
 	return render_template('admin/users/create.html',form=form)
 
 
-@user_blueprint.route('/update/<int:id>',methods=['GET','POST'])
-@login_required
+@app.route('/create_user',methods=['POST'],endpoint="create_user")
+def create_user():
+	data = request.get_json()
+	if data:
+		user = User(
+		email=data['email'],
+		username=data['username'],
+		role_id=2,
+		password="",
+		full_name=data['full_name'],
+		is_logged_in=data['is_logged_in'])
+
+	db.session.add(user)
+	db.session.commit()
+	return jsonify({'status':'success'})
+
+@user_blueprint.route('/update/<int:id>',endpoint='update',methods=['GET','POST'])
+@xr_login_required
 @has_permission('Users Update')
 def update(id):
 	user = User.query.get(id)
@@ -81,8 +98,8 @@ def update(id):
 
 	return render_template('admin/users/create.html',form=form,user=user)
 
-@user_blueprint.route('/update/profile',methods=['GET','POST'])
-@login_required
+@user_blueprint.route('/update/profile',methods=['GET','POST'] ,endpoint="update_profile")
+@xr_login_required
 def profile():
 	user = User.query.get(current_user.id)
 	is_profile = True
@@ -115,8 +132,8 @@ def profile():
 
 	return render_template('admin/users/profile.html',form=form,user=user,is_profile=is_profile)
 
-@user_blueprint.route('/delete/<int:id>',methods=['GET'])
-@login_required
+@user_blueprint.route('/delete/<int:id>',endpoint='delete',methods=['GET'])
+@xr_login_required
 @has_permission('Users Delete')
 def delete(id):
 	user = User.query.get(id)

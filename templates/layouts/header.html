@@ -34,7 +34,7 @@
         navbar_brand|safe }} {% endif %}
       </a>
 
-      {% if current_user.is_authenticated %}
+      {% if current_user %}
       <a class="logout-btn" href="{{  url_for('auth.admin_logout') }}"
         ><svg
           class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-vubbuv"

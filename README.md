@@ -136,6 +136,7 @@
 - ##### Step 8 :
 
   Now run the flask application using below command
+Final step:  python app.py
 
   ```shell
   flask run

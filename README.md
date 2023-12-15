@@ -16,6 +16,7 @@
   ```
 - ##### Step 2 :
 - Install conda before proceeding to further step
+- for installation in ubuntu refer this doc https://docs.anaconda.com/free/anaconda/install/linux/
 - 
   Now Create the conda enviroment for the project
   ```shell

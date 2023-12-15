@@ -52,7 +52,10 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 import string
+import configparser
 
+config = configparser.ConfigParser()
+config.read('demo-config.ini')
 # Load the model and vectorizer
 tfidf = pickle.load(open(os.path.join(os.path.dirname(
     __file__), 'models', 'vectorizer.pkl'), 'rb'))
@@ -63,7 +66,7 @@ question_technical_identification_model = pickle.load(open(os.path.join(os.path.
 @xr_login_required
 @has_permission('Interview Analyzer')
 def index():
-    return render_template('admin/interview_analyzer/index.html')
+    return render_template('admin/interview_analyzer/index.html',react_app_url=config.get('REACT', 'REACT_APP'))
 
 
 @products_blueprint.route('/fetch-candidate-list',endpoint='fetch_candidate_list')

@@ -107,6 +107,25 @@ function goBack() {
             });
           }
 
+          function getQueryVariable(variable) {
+            const query = window.location.search.substring(1);
+            const vars = query.split("&");
+            for (let i = 0; i < vars.length; i++) {
+                const pair = vars[i].split("=");
+                if (pair[0] === variable) {
+                    return decodeURIComponent(pair[1]);
+                }
+            }
+            return null;
+          }
+
+          // Get the value of the 'candidate_name' query parameter
+          const candidateName = getQueryVariable('candidate_name');
+
+          // Set the input field value
+          if (candidateName !== null) {
+              document.getElementById('candidate_name').value = candidateName;
+          }
           $(document).ready(function () {
             reload_candidate_list();
             $(document).on('click', '.gr_loader', function (e) {

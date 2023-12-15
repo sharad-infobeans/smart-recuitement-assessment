@@ -161,7 +161,7 @@ Interview Assessment {% endblock %} {% block page_body_title %}  {% endblock %} 
 </div>
 <script>
 function goBack() {
-  var baseURL = window.location.protocol + '//' + window.location.host;
+  var baseURL = "{{react_app_url}}"
   window.location.href = baseURL;
 }
 </script>

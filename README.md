@@ -15,6 +15,8 @@
   git clone git@github.com:sharad-infobeans/smart-recuitement-assessment.git
   ```
 - ##### Step 2 :
+- Install conda before proceeding to further step
+- 
   Now Create the conda enviroment for the project
   ```shell
   conda create -n ENV_NAME flask

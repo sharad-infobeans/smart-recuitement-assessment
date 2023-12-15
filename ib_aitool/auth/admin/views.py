@@ -96,7 +96,7 @@ def admin_logout():
     resp = make_response(func(*args, **kwargs))
     resp.set_cookie('auth-cookie', "")
     #return resp
-    return redirect(config.get('REACT', 'REACT_APP'))
+    return redirect(config.get('REACT', 'REACT_APP_BACKEND_HOST_URL'))
 
 @auth_admin_blueprint.route('/google-login-verify')
 def google_login_verify():

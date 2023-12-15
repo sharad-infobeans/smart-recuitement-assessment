@@ -29,11 +29,16 @@
           alt=""
         />
       </a>
-      <a class="navbar-brand" href="">
+      <!-- <a class="navbar-brand" href="">
         {% if title_brand %} {{title_brand| safe}}{% else %} {{
         navbar_brand|safe }} {% endif %}
-      </a>
+      </a> -->
 
+      <ul class="main-nav">
+        <li><a href="{{react_app_url}}/job-profile">Job Profiles</a></li>
+        <li><a href="{{react_app_url}}/candidates">Candidates</a></li>
+        <li><a href="{{react_app_url}}/source">Source</a></li>
+      </ul>
       {% if current_user %}
       <a class="logout-btn" href="{{  url_for('auth.admin_logout') }}"
         ><svg

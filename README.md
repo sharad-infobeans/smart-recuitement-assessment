@@ -8,11 +8,11 @@
   Clone Repository using below command
   Using Https
   ```GIT
-  git clone https://github.com/rahuldhamecha-infobeans/spam-ham-detection.git
+  git clone https://github.com/sharad-infobeans/smart-recuitement-assessment.git
   ```
   Using SSH
   ```GIT
-  git clone git@github.com:rahuldhamecha-infobeans/spam-ham-detection.git
+  git clone git@github.com:sharad-infobeans/smart-recuitement-assessment.git
   ```
 - ##### Step 2 :
   Now Create the conda enviroment for the project

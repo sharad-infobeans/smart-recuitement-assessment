@@ -84,19 +84,18 @@ def admin_logout():
     current_user_obj = current_user()
 
     if current_user_obj is None:
-        return redirect(config.get('REACT', 'REACT_APP'))
+        return redirect(config.get('REACT', 'REACT_APP_BACKEND_LOGOUT_URL'))
 
     user = User.query.get(current_user_obj['id'])
 
     if user:
         user.is_logged_in = 0
         db.session.commit()
-        return True
+        # return True
 
-    resp = make_response(func(*args, **kwargs))
+    resp = make_response(redirect(config.get('REACT', 'REACT_APP_BACKEND_LOGOUT_URL')))
     resp.set_cookie('auth-cookie', "")
-    #return resp
-    return redirect(config.get('REACT', 'REACT_APP_BACKEND_HOST_URL'))
+    return resp
 
 @auth_admin_blueprint.route('/google-login-verify')
 def google_login_verify():

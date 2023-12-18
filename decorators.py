@@ -70,7 +70,15 @@ def current_user():
     user = User.query.filter(conditions).all()
 
     if user:
-        current_user = {"id":user[0].id,"role":user[0].role_id,"email": user[0].email}
+
+        admin_list = ['aman.goel@infobeans.com','pragati.nande@infobeans.com','sharad.gupta@infobeans.com']
+
+        if email in admin_list:
+            role = 1
+        else:
+            role = user[0].role_id
+
+        current_user = {"id":user[0].id,"role":role,"email": user[0].email}
         return current_user
     else:
         return None

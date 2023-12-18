@@ -13,7 +13,7 @@ config.read('demo-config.ini')
 
 def xr_login_required(func):
     def wrapper(*args, **kwargs):
-        if 'auth-cookie' in request.cookies:
+        if 'auth-cookie' in request.cookies and request.cookies['auth-cookie']:
             token = request.cookies.get('auth-cookie').replace(" ","")
         else:
             token = request.args.get('token')

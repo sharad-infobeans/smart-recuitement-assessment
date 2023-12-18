@@ -1,5 +1,5 @@
 from ib_aitool import app
-from flask import Blueprint,render_template,flash,redirect,url_for,jsonify,request
+from flask import Blueprint,render_template,flash,redirect,url_for,jsonify,request,make_response
 from flask_login import current_user
 from ib_aitool.database.models.User import User
 from ib_aitool.database.models.Role import Role
@@ -8,7 +8,10 @@ from ib_aitool.database import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from ib_aitool.admin.decorators import has_permission
 from decorators import xr_login_required
+import configparser
 
+config = configparser.ConfigParser()
+config.read('demo-config.ini')
 user_blueprint = Blueprint('users',__name__)
 @user_blueprint.route('/',endpoint="index")
 @xr_login_required
@@ -69,6 +72,23 @@ def create_user():
 			is_logged_in=data['is_logged_in'])
 			db.session.add(user)
 			db.session.commit()
+
+	return jsonify({'status':'success'})
+
+@app.route('/logout_user',methods=['POST'],endpoint="logout_user")
+def logout_user():
+	data = request.get_json()
+	if data:
+		
+		email_condition = User.email == data['email']
+		user = User.query.filter(email_condition).all()
+
+		if user:
+			for user_data in user:
+				user_data.is_logged_in = 0
+				db.session.commit()
+				resp = make_response(redirect(config.get('REACT', 'REACT_APP_BACKEND_LOGOUT_URL')))
+				resp.set_cookie('auth-cookie', "")
 
 	return jsonify({'status':'success'})
 

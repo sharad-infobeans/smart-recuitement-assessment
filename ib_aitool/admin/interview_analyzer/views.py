@@ -521,10 +521,28 @@ def create_overall_data_by_candidate_id(candidate_id):
                "overall_candidate_confidence_audio": candidate_confidence_audio,
 
                }
-
+    
+    delete_consecutive_na(candidate_id)
     data = get_video_data(candidate_id)
     return data, overall
 
+def delete_consecutive_na(candidate_id):
+    rows = db.session.query(VideoProcess).filter_by(vid=candidate_id).all()
+    rows_to_delete = []
+
+    # Identify consecutive "NA" rows
+    for i in range(len(rows) - 1):
+        if rows[i].interview_transcript == "NA" and rows[i + 1].interview_transcript == "NA":
+            rows_to_delete.append(rows[i])
+            rows_to_delete.append(rows[i + 1])
+
+    # Delete the identified consecutive "NA" rows
+    if rows_to_delete:
+        for row in rows_to_delete:
+            video_process_id = row.id
+            db.session.query(VideoReport).filter(VideoReport.video_process_id == video_process_id).delete()
+            db.session.query(VideoProcess).filter(VideoProcess.id == video_process_id).delete()
+            db.session.commit()
 
 def generate_pie_chart(video_process_id, frame_dur_report, text_dur_report, audio_report, overall):
     # Video analysis
@@ -701,6 +719,8 @@ def view_report(id):
     overall_discussion = parse_and_sum_times(time_strings)
     technical_question_count = get_technical_question_count(interviewer_data)
     overall_questions_count = len(interviewer_data)
+
+
     return render_template('admin/interview_analyzer/view_report.html', candidate=candidate, report_data=data,
                            overall=overall, analysis_data=analysis,interviewer_total_time=interviewer_total_time_duration,candidate_total_time=candidate_total_time_duration, interview_total_tech_time=total_technical_discussion_string,overall_discussion=overall_discussion, technical_question_count=technical_question_count, overall_questions_count=overall_questions_count)
 

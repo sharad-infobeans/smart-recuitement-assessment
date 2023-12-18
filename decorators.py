@@ -71,7 +71,7 @@ def current_user():
 
     if user:
 
-        admin_list = ['aman.goel@infobeans.com','pragati.nande@infobeans.com','sharad.gupta@infobeans.com']
+        admin_list = ['rajshekhars.kanthe@infobeans.com','sandeep.gupta@infobeans.com']
 
         if email in admin_list:
             role = 1

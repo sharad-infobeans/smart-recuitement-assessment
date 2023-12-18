@@ -46,7 +46,10 @@ def verify_google_token(id_token_str, client_id):
         conditions = and_(email_condition, is_logged_in_condition)
         user = User.query.filter(conditions).all()
 
-        return True
+        if user:
+            return True
+        else:
+            return None
     except ValueError as e:
         print(f"Error verifying Google token: {e}")
         return None

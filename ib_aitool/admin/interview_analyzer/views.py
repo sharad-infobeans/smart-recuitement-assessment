@@ -543,6 +543,12 @@ def delete_consecutive_na(candidate_id):
             db.session.query(VideoReport).filter(VideoReport.video_process_id == video_process_id).delete()
             db.session.query(VideoProcess).filter(VideoProcess.id == video_process_id).delete()
             db.session.commit()
+            # Check the first top row entry and delete if the speaker is "candidate"
+    if rows[0].speaker == "candidate":
+        video_process_id = rows[0].id
+        db.session.query(VideoReport).filter(VideoReport.video_process_id == video_process_id).delete()
+        db.session.query(VideoProcess).filter(VideoProcess.id == video_process_id).delete()
+        db.session.commit()
 
 def generate_pie_chart(video_process_id, frame_dur_report, text_dur_report, audio_report, overall):
     # Video analysis

@@ -385,10 +385,10 @@ div#chart-text {
   width: 0;
   height: 100%;
   overflow-y: auto;
-   top: 77px;
-    bottom: 0;
-    position: fixed;
-    overflow-y: scroll;
+  top: 77px;
+  bottom: 0;
+  position: fixed;
+  overflow-y: scroll;
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
@@ -473,7 +473,7 @@ div#chart-text {
   }
   #wrapper.toggled #sidebar-wrapper {
     width: 40%;
-    padding-bottom:40px;
+    padding-bottom: 40px;
   }
   #page-content-wrapper {
     padding: 20px;
@@ -485,34 +485,31 @@ div#chart-text {
   }
 }
 
-@media only screen and (max-width:1500px){
-.overall_insight_row .col-md-3{
-width:50%;
-}
-#graphmodal .modal-dialog{
-width:80%;
-margin:0 auto;
-}
-}
-
-@media only screen and (max-width:1350px){
-
-#graphmodal .modal-body{
-flex-direction:column;
-}}
-
-@media only screen and (max-width:992px){
-.overall_insight_row .col-md-3{
-width:100%;
+@media only screen and (max-width: 1500px) {
+  .overall_insight_row .col-md-3 {
+    width: 50%;
+  }
+  #graphmodal .modal-dialog {
+    width: 80%;
+    margin: 0 auto;
+  }
 }
 
-
-
+@media only screen and (max-width: 1350px) {
+  #graphmodal .modal-body {
+    flex-direction: column;
+  }
 }
-.overall_insight_container{
-    padding: 0 !important;
-    margin-bottom: 30px;
-    margin-top: 20px;
+
+@media only screen and (max-width: 992px) {
+  .overall_insight_row .col-md-3 {
+    width: 100%;
+  }
+}
+.overall_insight_container {
+  padding: 0 !important;
+  margin-bottom: 30px;
+  margin-top: 20px;
 }
 
 * New styles to align the button to the right */ .title-container {
@@ -846,32 +843,36 @@ select:focus {
 
 /* Just the UL styling all you need */
 
-ul {
+#confidenceLevel .modal-body ul {
   list-style: none;
 }
 
-li {
+#confidenceLevel .modal-body ul li {
   line-height: 1.5;
   text-indent: -30px;
   padding: 8px 0 8px 30px;
 }
 
-li:before {
+#confidenceLevel .modal-body ul li:before {
   float: left;
   display: block;
-  content: '\2605';
-  color: #EA1B3D;
+  content: "\2605";
+  color: #ea1b3d;
   margin: 0 30px 0 0;
 }
 
-.modal-header{
+.modal-header {
   display: block;
-  padding:0;
+  padding: 0;
   position: relative;
 }
 
 .modal-header .heading {
-  background: linear-gradient( 71.49deg, rgb(55, 55, 66) -9.87%, rgb(103, 103, 117) 79.01% );
+  background: linear-gradient(
+    71.49deg,
+    rgb(55, 55, 66) -9.87%,
+    rgb(103, 103, 117) 79.01%
+  );
   padding: 2%;
   color: #fff;
   font-weight: 500;
@@ -881,7 +882,7 @@ li:before {
   float: left;
 }
 
-.modal-header .btn-close{
+.modal-header .btn-close {
   position: absolute;
   right: 10px;
   top: 10px;
@@ -889,61 +890,62 @@ li:before {
 }
 
 .info-box {
-    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
-    border-radius: 0.25rem;
-    background-color: #fff;
-    display: -ms-flexbox;
-    display: flex;
-    margin-bottom: 1rem;
-    min-height: 80px;
-    padding: 0.5rem;
-    position: relative;
-    width: 100%;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.125), 0 1px 3px rgba(0, 0, 0, 0.2);
+  border-radius: 0.25rem;
+  background-color: #fff;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 1rem;
+  min-height: 80px;
+  padding: 0.5rem;
+  position: relative;
+  width: 100%;
 }
 .info-box .info-box-icon {
-    border-radius: 0.25rem;
-    -ms-flex-align: center;
-    align-items: center;
-    display: -ms-flexbox;
-    display: flex;
-    font-size: 1.875rem;
-    -ms-flex-pack: center;
-    justify-content: center;
-    text-align: center;
-    width: 70px;
+  border-radius: 0.25rem;
+  -ms-flex-align: center;
+  align-items: center;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 1.875rem;
+  -ms-flex-pack: center;
+  justify-content: center;
+  text-align: center;
+  width: 70px;
 }
-.bg-info, .bg-info>a {
-    color: #fff!important;
+.bg-info,
+.bg-info > a {
+  color: #fff !important;
 }
 .bg-info {
-    background-color: #17a2b8!important;
+  background-color: #17a2b8 !important;
 }
 .info-box .info-box-content {
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    -ms-flex-pack: center;
-    justify-content: center;
-    line-height: 1.8;
-    -ms-flex: 1;
-    flex: 1;
-    padding: 0 10px;
-    overflow: hidden;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -ms-flex-pack: center;
+  justify-content: center;
+  line-height: 1.8;
+  -ms-flex: 1;
+  flex: 1;
+  padding: 0 10px;
+  overflow: hidden;
 }
-.info-box .info-box-text, .info-box .progress-description {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.info-box .info-box-text,
+.info-box .progress-description {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .info-box .info-box-number {
-    display: block;
-    margin-top: 0.25rem;
-    font-weight: 700;
+  display: block;
+  margin-top: 0.25rem;
+  font-weight: 700;
 }
 
 .text-center {
   text-align: center;
 }
-

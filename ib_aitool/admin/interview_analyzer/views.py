@@ -522,7 +522,7 @@ def create_overall_data_by_candidate_id(candidate_id):
 
                }
     
-    delete_consecutive_na(candidate_id)
+    #delete_consecutive_na(candidate_id)
     data = get_video_data(candidate_id)
     return data, overall
 

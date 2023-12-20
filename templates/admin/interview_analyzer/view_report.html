@@ -404,14 +404,23 @@ for (let i = 0; i < accordion.length; i++) {
           <div class="col-md mb-4 mb-md-0">
             <div class="accordion mt-3" id="question_answer_accordion">
               {% set list_length = report_data|length %}
+              {% set is_next_candidate=0 %}
               {% for video_report,
               video_process in report_data %}
               {% set index = loop.index %}
               {% if index <= list_length %} {% if index==list_length %} {% set
                 next_video_process=report_data[index-1][1] %} {% else %} {% set next_video_process=report_data[index][1]
-                %} {% endif %} {% if (next_video_process.start_duration|int - 3) <=video_process.end_duration|int
+                %} 
+                {% if report_data[index+1] %}
+                {% set nextone_video_process=report_data[index+1][1] %}
+                {% if nextone_video_process.speaker=='interviewer' %}
+                  {% set  is_next_candidate =1 %}
+                      {{is_next_candidate}}helllo
+                  {% endif %} 
+                {% endif %}
+                {% endif %} {% if (next_video_process.start_duration|int - 3) <=video_process.end_duration|int
                 <=(next_video_process.start_duration|int + 3) and video_process.speaker=='interviewer' %} <div
-                class="card accordion-item">
+                class="card accordion-item" style="display:{% if video_process.interview_transcript=='NA' and next_video_process.interview_transcript=='NA' and is_next_candidate ==1 %}none; {% endif %}">
                 <h2 class="accordion-header" id="heading_{{ index }}">
                   <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse"
                     data-bs-target="#accordion_{{ index }}" aria-expanded="false" aria-controls="accordion_{{ index }}">

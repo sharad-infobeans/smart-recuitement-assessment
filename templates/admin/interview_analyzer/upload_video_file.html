@@ -67,7 +67,7 @@ function goBack() {
                       <input class="input_text" type="text" id="candidate_name" name="candidate_name"
                         class="form-control" placeholder="Enter Interviewer Name" required />
 
-                      <input hidden="true" type="file" name="file" id="file" required accept="video/*" />
+                      <input hidden="true" type="file" name="file" id="file" required accept="video/*" onchange="updateFileName(this)"/>
                       </br></br>
                       <div class="row">
                         <div class="col-md-12 center">
@@ -142,6 +142,12 @@ function goBack() {
             })
           });
 
+          function updateFileName(input) {
+            const nameFile = document.getElementById('namefile');
+            const fileName = input.files[0].name;
+            nameFile.textContent = `File Selected: ${fileName}`;
+          }
+
           $(document).on('click', '.upload_video_btn', function () {
             var name = document.getElementById('candidate_name').value;
             var fileInput = document.getElementById('file');
@@ -207,8 +213,18 @@ function goBack() {
             background-color: #ff3f3f !important;
             border-color: #ff3f3f !important;
           }
+          .loader_txt_msg{
+              position: absolute;
+              left: 0;
+              bottom: 39%;
+              width: 100%;
+              right: 0;
+              text-align: center;
+              font-weight: 700;
+          }
         </style>
         <div class="loader_wrapper d-none">
+              <p class="loader_txt_msg">Video is uploading, Please Don't Refresh the page </p>
           <div class="loader">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
               style="margin: auto; display: block" width="200px" height="200px" viewBox="0 0 100 100"

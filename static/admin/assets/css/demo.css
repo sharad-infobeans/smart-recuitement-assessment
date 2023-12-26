@@ -403,12 +403,17 @@ footer .divider {
   justify-content: space-between;
 }
 
+.table_div {
+  overflow-x: scroll;
+}
+
 @media only screen and (max-width: 767px) {
   .main_buttons_wrapper {
     flex-direction: column-reverse;
   }
 
   .main-nav {
+    display: none;
     text-align: left;
     margin: 10px 0 0 0px;
   }
@@ -418,5 +423,17 @@ footer .divider {
   }
   .logout-btn {
     padding: 0;
+  }
+
+  .file-upload-button.css-1ikvom0 {
+    margin-bottom: 20px;
+  }
+
+  .main_buttons {
+    margin-bottom: 20px;
+  }
+
+  .main_buttons button {
+    width: 100%;
   }
 }

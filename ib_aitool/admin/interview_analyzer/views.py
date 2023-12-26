@@ -175,7 +175,7 @@ def upload_transcript():
 @xr_login_required
 @has_permission('Interview Analyzer')
 def interview_video_upload_file():
-    return render_template('admin/interview_analyzer/upload_video_file.html')
+    return render_template('admin/interview_analyzer/upload_video_file.html',react_app_url=config.get('REACT', 'REACT_APP'))
 
 @products_blueprint.route('/upload_transcript_file',endpoint='interview_transcript_upload_file')
 @xr_login_required

@@ -21,7 +21,7 @@
 
       if ($("#wrapper").hasClass("toggled")) {
         $(".container").css("margin-left", "10px");
-        $(".container").css("width", "60%");
+        $(".container").addClass("wrapper_opened");
         $(".added-css").css("margin-right", "39.6%");
          $(".added-css").css("transition", "margin-right 0.5s ease-in-out, transform 0.5s ease-in-out");
           $(".added-css1").css("display", "none");
@@ -35,7 +35,7 @@
       } else {
         $(".container").css("margin-left", "");
         $(".added-css").css("margin-right", "");
-        $(".container").css("width", "");
+        $(".container").removeClass("wrapper_opened");
         $(".added-css1").css("display", "");
         $(".icon").removeClass("fa-arrow-circle-right");
         var element = document.querySelector('.added-css');
@@ -197,8 +197,7 @@
       $("#wrapper").toggleClass("toggled");
 
       if ($("#wrapper").hasClass("toggled")) {
-        $(".container").css("margin-left", "10px");
-        $(".container").css("width", "60%");
+        $(".container").addClass("wrapper_opened");
         $(".added-css").css("margin-right", "39.6%");
         $(".added-css1").css("display", "none");
          $(".added-css").css("transition", "margin-right 0.5s ease-in-out, transform 0.5s ease-in-out");
@@ -208,9 +207,8 @@
   element.innerHTML = '<i class="fa fa-arrow-circle-right icon fa-lg" aria-hidden="true"></i> Outsights';
 }
       } else {
-        $(".container").css("margin-left", "");
         $(".added-css").css("margin-right", "");
-        $(".container").css("width", "");
+        $(".container").removeClass("wrapper_opened");
         $(".icon").removeClass("fa-arrow-circle-right");
         var element = document.querySelector('.added-css');
         $(".added-css1").css("display", "");

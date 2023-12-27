@@ -260,6 +260,14 @@ div#chart-text {
     right: 13px;
     top: 27px;
   }
+  #wrapper.toggled #sidebar-wrapper {
+    width: 100% !important;
+    top: 101px;
+  }
+
+  #wrapper.toggled #sidebar-wrapper {
+    background: #fff;
+  }
 }
 
 @media only screen and (max-width: 650px) {
@@ -472,8 +480,10 @@ div#chart-text {
     width: 0;
   }
   #wrapper.toggled #sidebar-wrapper {
-    width: 40%;
+    width: 60%;
+    background: #fff;
     padding-bottom: 40px;
+    top: 100px;
   }
   #page-content-wrapper {
     padding: 20px;

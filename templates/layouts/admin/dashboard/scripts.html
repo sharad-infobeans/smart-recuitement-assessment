@@ -21,6 +21,9 @@
   jQuery(document).ready(function ($) {
     $(document).on("click", ".navbar-toggler", function (e) {
       e.preventDefault();
+      $(this).find(".fa-bars").toggle();
+      $(this).find(".fa-close").toggle();
+
       $(".main-nav").slideToggle();
     });
   });

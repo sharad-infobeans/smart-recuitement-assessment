@@ -407,7 +407,11 @@ footer .divider {
   overflow-x: scroll;
 }
 
-@media only screen and (max-width: 767px) {
+.navbar .fa.fa-close {
+  display: none;
+}
+
+@media only screen and (max-width: 992px) {
   .main_buttons_wrapper {
     flex-direction: column-reverse;
   }
@@ -433,7 +437,33 @@ footer .divider {
     margin-bottom: 20px;
   }
 
+  #sidebar-wrapper .tabs {
+    background: #fff;
+  }
+
   .main_buttons button {
+    width: auto;
+  }
+
+  .accordion-item .percentage-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .accordion-item .percentage-wrapper .interviewer {
+    margin-bottom: 20px;
+  }
+
+  .navbar .fa.fa-close {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .wrapper_opened {
     width: 100%;
+    margin: 0 auto;
+  }
+  .table_div {
+    padding: 20px 0;
   }
 }

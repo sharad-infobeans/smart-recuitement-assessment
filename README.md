@@ -75,14 +75,14 @@
 DIRECTORY_PATH = /var/www/html/Ib-Investors-report/data/
 SECRET_KEY = mysecret
 OPENAI_API_KEY = REPLACE_ME_YOUR_OPENAI_SECRET_KEY
-
+```
 [Google]
 GOOGLE_CLIENT_ID = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 GOOGLE_CLIENT_SECRET = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 GOOGLE_ENV_LOCAL = True
 GOOGLE_SCOPE = profile email
 GOOGLE_CLIENT_ID_JWT = xxxxxxxxxxxxxxxxxxxxxxxxxxx
-
+```
 [Mail]
 MAIL_SERVER = smtp.gmail.com
 MAIL_PORT = 587
@@ -90,17 +90,17 @@ MAIL_USERNAME = xxxxxxxxxxxxxxxxxxx
 MAIL_PASSWORD = xxxxxxxxxxxxxxxxxxx
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
-
+```
 [Database]
 USERNAME = xxxxxxx
 PASSWORD = xxxxxxxx
 HOST = localhost
 DATABASE = xxxxx
-
+```
 [REACT]
 REACT_APP = http://localhost:3000 (https://betascreening.creatingwow.in/)
 REACT_APP_BACKEND_LOGOUT_URL = http://localhost:5000/auth/logout  or (https://betascreeningapi.creatingwow.in/auth/logout)
-  ```
+```
 
 - ##### Step 6 :
   Now set the flask app file to FLASK_APP path

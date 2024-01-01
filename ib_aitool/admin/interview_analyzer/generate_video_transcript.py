@@ -72,6 +72,7 @@ def extract_question_timestamps(transcription_result, max_questions=5):
 # Function to save frames from a video based on timestamps
 def save_frames_from_video(video_file, timestamps, output_folder):
     os.makedirs(output_folder, exist_ok=True)
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     cap = cv2.VideoCapture(video_file)
     frame_count = 0
 
@@ -79,14 +80,23 @@ def save_frames_from_video(video_file, timestamps, output_folder):
         for timestamp in timestamps:
             start_time = int(timestamp['start'])
             end_time = int(timestamp['end'])
-            cap.set(cv2.CAP_PROP_POS_MSEC, start_time*1000)
+            cap.set(cv2.CAP_PROP_POS_MSEC, start_time * 1000)
             while True:
                 ret, frame = cap.read()
                 if not ret or frame_count >= end_time:
                     break
-                frame_filename = f"{output_folder}/frame_{frame_count}_{start_time}_{end_time}.jpg"
-                cv2.imwrite(frame_filename, frame)
+
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+
+                # Crop the faces and save
+                for i, (x, y, w, h) in enumerate(faces):
+                    face_img = frame[y:y+h, x:x+w]
+                    face_filename = f"{output_folder}/frame_{frame_count}_face_{i}.jpg"
+                    cv2.imwrite(face_filename, face_img)
+
                 frame_count += 1
+
     else:
         cap.set(cv2.CAP_PROP_POS_MSEC, 0)
         frame_interval_ms = 1000  # One frame per second (1000 milliseconds)
@@ -94,15 +104,22 @@ def save_frames_from_video(video_file, timestamps, output_folder):
             ret, frame = cap.read()
             if not ret:
                 break
-            frame_filename = f"{output_folder}/frame_{frame_count}.jpg"
-            cv2.imwrite(frame_filename, frame)
+
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+
+            # Crop the faces and save
+            for i, (x, y, w, h) in enumerate(faces):
+                face_img = frame[y:y+h, x:x+w]
+                face_filename = f"{output_folder}/frame_{frame_count}.jpg"
+                cv2.imwrite(face_filename, face_img)
+
             frame_count += 1
 
             # Skip frames to maintain one frame per second
             cap.set(cv2.CAP_PROP_POS_MSEC, frame_count * frame_interval_ms)
 
-
-    cap.release()
+    #cap.release()
     return frame_count
 
 def save_highest_count_videoframe(image_dir, output_dir):
@@ -124,15 +141,14 @@ def save_highest_count_videoframe(image_dir, output_dir):
             image = cv2.imread(image_path)
             average_pixel_value = image.mean()
 
-            threshold = 135  # Example threshold
-
-            if average_pixel_value > threshold:
+            threshold = 98  # Example threshold
+            if average_pixel_value > threshold and average_pixel_value < 130:
                 type_a_count += 1
                 if highest_count_image_type_a is None or type_a_count > highest_count_image_type_a[1]:
                     highest_count_image_type_a = (filename, type_a_count)
                 if lowest_count_image_type_a is None or type_a_count < lowest_count_image_type_a[1]:
                     lowest_count_image_type_a = (filename, type_a_count)
-            else:
+            elif average_pixel_value < 90:
                 type_b_count += 1
                 if highest_count_image_type_b is None or type_b_count > highest_count_image_type_b[1]:
                     highest_count_image_type_b = (filename, type_b_count)
@@ -234,6 +250,7 @@ def generate_transcipt(videopath):
 
 
 def save_frames_for_timestamps(video_path, timestamps, dir_path, basename, ext='jpg'):
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     cap = cv2.VideoCapture(video_path)
 
     if not cap.isOpened():
@@ -241,20 +258,18 @@ def save_frames_for_timestamps(video_path, timestamps, dir_path, basename, ext='
 
     os.makedirs(dir_path, exist_ok=True)
 
-    digit = len(str(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))))
-    
     fps = cap.get(cv2.CAP_PROP_FPS)
     fps_inv = 1 / fps
-    
+
     for i, timestamp in enumerate(timestamps):
-        if timestamp.start_duration ==0:
-            start_time_sec = math.ceil(float(timestamp.start_duration))+1
+        if timestamp.start_duration == 0:
+            start_time_sec = math.ceil(float(timestamp.start_duration)) + 1
         else:
             start_time_sec = math.ceil(float(timestamp.start_duration))
         end_time_sec = math.ceil(float(timestamp.end_duration))
         screenshot_count = 0
         current_time = start_time_sec
-        frame_time_interval = 1.0 
+        frame_time_interval = 1.0
         sub_dir_path = os.path.join(dir_path, f'{timestamp.id}__timestamp_{start_time_sec}_{end_time_sec}')
         os.makedirs(sub_dir_path, exist_ok=True)
 
@@ -263,17 +278,25 @@ def save_frames_for_timestamps(video_path, timestamps, dir_path, basename, ext='
             cap.set(cv2.CAP_PROP_POS_FRAMES, n)
             ret, frame = cap.read()
             if ret:
-                cv2.imwrite(
-                    os.path.join(sub_dir_path, '{}_{}.{}'.format(basename, screenshot_count, ext)),
-                    frame
-                )
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+
+                # Crop the faces and save
+                for j, (x, y, w, h) in enumerate(faces):
+                    face_img = frame[y:y+h, x:x+w]
+                    cv2.imwrite(
+                        #os.path.join(dir_path, f'{timestamp.id}__timestamp_{start_time_sec}_{end_time_sec}')
+                        os.path.join(sub_dir_path, '{}_{}.{}'.format(basename, screenshot_count, ext)),
+                        face_img
+                    )
+
                 screenshot_count += 1
             else:
                 break
             current_time += frame_time_interval  # Capture one frame per second
 
     # Release the video capture
-    cap.release()
+    #cap.release()
     return True
 
 # Usage
@@ -291,7 +314,7 @@ def crop_and_save_video_timestamps(input_video_path,timestamps,output_video_path
             else:
                 start_time_sec = math.ceil(float(timestamp.start_duration))
             end_time_sec = math.ceil(float(timestamp.end_duration))
-            print(f"start:{start_time_sec},end{end_time_sec}")
+            #print(f"start:{start_time_sec},end{end_time_sec}")
             cropped_video = video.subclip(start_time_sec, end_time_sec)
             # Define the output video file name based on the timestamp
             output_filename = f"{timestamp.id}__timestamp_{start_time_sec}_{end_time_sec}_vclip.mp4"
@@ -493,8 +516,8 @@ def analyze_audio_timestamps_clips(timestamp_folder):
 
 def classify_images_and_generate_timestamp(image_dir, interviewer_image_path):
     interviewer_image = cv2.imread(interviewer_image_path).mean()
-    interviewer_image_plus = interviewer_image + 15
-    interviewer_image_sub = interviewer_image - 15
+    interviewer_image_plus = interviewer_image + 10
+    interviewer_image_sub = interviewer_image - 10
 
     type_a_count = 0
     type_b_count = 0
@@ -529,22 +552,6 @@ def classify_images_and_generate_timestamp(image_dir, interviewer_image_path):
     type_a_array = sorted(type_a_array)
     type_b_array = sorted(type_b_array)
 
-    def group_consecutive_numbers(nums, label):
-        result_arrays = []
-        current_array = []
-
-        for num in sorted(nums):
-            if not current_array or num == current_array[-1] + 1:
-                current_array.append(num)
-            else:
-                result_arrays.append({label: current_array})
-                current_array = [num]
-
-        if current_array:
-            result_arrays.append({label: current_array})
-
-        return result_arrays
-
     result_arrays1 = group_consecutive_numbers(type_a_array, 'candidate')
     result_arrays2 = group_consecutive_numbers(type_b_array, 'interviewer')
     merged_arrays = result_arrays1 + result_arrays2
@@ -559,7 +566,21 @@ def classify_images_and_generate_timestamp(image_dir, interviewer_image_path):
 
     return output_data
 
+def group_consecutive_numbers(nums, label):
+        result_arrays = []
+        current_array = []
 
+        for num in sorted(nums):
+            if not current_array or num == current_array[-1] + 1:
+                current_array.append(num)
+            else:
+                result_arrays.append({label: current_array})
+                current_array = [num]
+
+        if current_array:
+            result_arrays.append({label: current_array})
+
+        return result_arrays
 
 def get_audioclip_timestamps(audio_path, start_time_seconds,end_time_seconds, dir_path):
     os.makedirs(dir_path, exist_ok=True)

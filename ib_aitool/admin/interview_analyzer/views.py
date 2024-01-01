@@ -25,6 +25,7 @@ import os
 import jinja2
 import glob
 import cv2
+from PIL import Image
 
 from ib_aitool.admin.interview_analyzer.generate_video_transcript import generate_transcipt, save_frames_for_timestamps, \
     save_audioclip_timestamps, analyze_timestamp_folder, analyze_audio_timestamps_clips, transcribe_video, \
@@ -891,12 +892,14 @@ def analyze_video(queue, candidate_id, selected_image):
 
             shutil.copy(selected_image, custom_image_path)
             image_dir = f'uploads/{video_name_without_extension}/allframes'
+            #delete_small_images(image_dir)
             interviewer_image_path = f'uploads/{video_name_without_extension}/video-interviewer/{video_name_without_extension}.jpg'
             # Check if both the image directory and interviewer image exist and are not empty
             if os.path.exists(image_dir) and os.path.exists(interviewer_image_path) and is_directory_not_empty(
                     image_dir):
-                result = classify_images_and_generate_timestamp(image_dir, interviewer_image_path)
+                result_scratch = classify_images_and_generate_timestamp(image_dir, interviewer_image_path)
                 temp_storage_dir_path = f'uploads/{video_name_without_extension}/'
+                result=merge_entries_by_combining_timing(result_scratch)
                 final_transcript_data = process_video_and_transcript(result, audioPath, temp_storage_dir_path)
                 # print(final_transcript_data)
                 # Loop through the data and save it to the database
@@ -920,11 +923,26 @@ def analyze_video(queue, candidate_id, selected_image):
             result = True
         else:
             result = False
-        print(f'result: {result}')
         queue.put(result)
         time.sleep(1)  # Simulate some processing time
         print('Part 1 completed')  # Debugging statement
 
+def merge_entries_by_combining_timing(data):
+    merged_data = []
+    current_entry = None
+
+    for entry in data:
+        key, value = list(entry.items())[0]  # Get the key name and its value
+        
+        if current_entry is None or key != list(current_entry.items())[0][0]:
+            # Add a new entry if current entry is None or key doesn't match
+            current_entry = {key: value}
+            merged_data.append(current_entry)
+        else:
+            # Merge timings if the key matches the current entry's key
+            current_entry[key]['end'] = value['end']
+
+    return merged_data
 
 @products_blueprint.route('/confirm_interviewer', methods=['POST'],endpoint="confirm_interviewer")
 def confirm_interviewer():
@@ -942,32 +960,61 @@ def confirm_interviewer():
             timestamp = []
             timestamp.append({'start': 30, 'end': 150})
             save_two_minutes_frame(videoPath, timestamp, output_folder)  # save two minutes frames
+            delete_small_images(output_folder)
             finalize_interviewer_saved = save_highest_count_videoframe(output_folder, output_directory_path)
             if finalize_interviewer_saved:
                 return json.dumps({'success': 1, 'image': output_directory_path + 'interviewer.jpg'})
             else:
                 return json.dumps({'success': 0})
 
+def delete_small_images(folder_path):
+    # Iterate through files in the folder
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        
+        # Check if the file is an image
+        if os.path.isfile(file_path) and any(filename.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
+            # Open the image using PIL
+            with Image.open(file_path) as img:
+                # Get the size of the image in bytes
+                file_size = os.path.getsize(file_path)
+                
+                # Check if the size is less than 5 KB (5 * 1024 bytes)
+                if file_size < 15 * 1024:
+                    #print(f"Image '{filename}' is smaller than 5 KB ({file_size} bytes) and will be deleted.")
+                    os.remove(file_path)
 
 def save_two_minutes_frame(videoPath, timestamp, output_folder):
     os.makedirs(output_folder, exist_ok=True)
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    
     cap = cv2.VideoCapture(videoPath)
     frame_count = 0
     start_time = int(timestamp[0]['start'])
     end_time = int(timestamp[0]['end'])
     cap.set(cv2.CAP_PROP_POS_MSEC, (start_time * 1000))
     frame_interval_ms = 1000  # One frame per second (1000 milliseconds)
-    while True:
+    total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    while frame_count < total_frames:
         ret, frame = cap.read()
         if not ret or cap.get(cv2.CAP_PROP_POS_MSEC) > (end_time * 1000):
             break
-        frame_filename = f"{output_folder}/frame_{frame_count}.jpg"
-        cv2.imwrite(frame_filename, frame)
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+        # Crop the faces directly from the frame using the faces array
+        for i, (x, y, w, h) in enumerate(faces):
+            face_img = frame[y:y+h, x:x+w]
+            frame_filename = f"{output_folder}/frame_{frame_count}.jpg"
+            cv2.imwrite(frame_filename, face_img)
+            
         frame_count += 1
-
         # Skip frames to maintain one frame per second
+        
         cap.set(cv2.CAP_PROP_POS_MSEC, frame_count * frame_interval_ms)
-
+        
+    
+    return True
     cap.release()
 
 
@@ -1245,7 +1292,6 @@ def remove_all_model_created_files(videopath):
     shutil.rmtree(video_name_without_extension)
     # Iterate through the files and delete those with matching base names
     for file_path in all_files:
-        print(file_path)
         file_base_name, file_extension = os.path.splitext(os.path.basename(file_path))
         if file_base_name.startswith(base_name):
             os.remove(file_path)

@@ -68,43 +68,38 @@
   ```
 - ##### Step 5 :
 
-  Now Change the Config in app_config folder
-  For Sign in with Google
+  Now Update credentials in the demo-config.ini file [https://github.com/sharad-infobeans/smart-recuitement-assessment/blob/master/demo-config.ini] 
 
-  ```python
-  def google_config():
-      return {
-          'GOOGLE_CLIENT_ID': 'xxxxxxxxxxxxxxxxxxxxxxx',
-          'GOOGLE_CLIENT_SECRET': 'xxxxxxxxxxxxxxxxxxxx',
-          'GOOGLE_ENV_LOCAL': True,
-          'GOOGLE_SCOPE': ['profile', 'email'],
-      }
   ```
+[AppConfig]
+DIRECTORY_PATH = /var/www/html/Ib-Investors-report/data/
+SECRET_KEY = mysecret
+OPENAI_API_KEY = REPLACE_ME_YOUR_OPENAI_SECRET_KEY
 
-  For Email Configuration
+[Google]
+GOOGLE_CLIENT_ID = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+GOOGLE_CLIENT_SECRET = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+GOOGLE_ENV_LOCAL = True
+GOOGLE_SCOPE = profile email
+GOOGLE_CLIENT_ID_JWT = xxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-  ```python
-  def mail_config():
-      return {
-          'MAIL_SERVER': 'smtp.gmail.com',
-          'MAIL_PORT': 587,
-          'MAIL_USERNAME': 'xxxxxxxxxx',
-          'MAIL_PASSWORD': 'xxxxxxxxxx',
-          'MAIL_USE_TLS': True,
-          'MAIL_USE_SSL': False,
-      }
-  ```
+[Mail]
+MAIL_SERVER = smtp.gmail.com
+MAIL_PORT = 587
+MAIL_USERNAME = xxxxxxxxxxxxxxxxxxx
+MAIL_PASSWORD = xxxxxxxxxxxxxxxxxxx
+MAIL_USE_TLS = True
+MAIL_USE_SSL = False
 
-  For MySql Database configuration
+[Database]
+USERNAME = xxxxxxx
+PASSWORD = xxxxxxxx
+HOST = localhost
+DATABASE = xxxxx
 
-  ```python
-  def database_config():
-      return {
-          'USERNAME': 'xxxx',
-          'PASSWORD': 'xxxxxx',
-          'HOST': 'localhost',
-          'DATABASE': 'xxxxxx'
-      }
+[REACT]
+REACT_APP = http://localhost:3000 (https://betascreening.creatingwow.in/)
+REACT_APP_BACKEND_LOGOUT_URL = http://localhost:5000/auth/logout  or (https://betascreeningapi.creatingwow.in/auth/logout)
   ```
 
 - ##### Step 6 :
@@ -144,5 +139,7 @@ Final step:  python app.py
   ```shell
   flask run
   ```
+
+
 
 - ##### Note\*: Restart the server after installation of all modules

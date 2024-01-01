@@ -99,7 +99,7 @@ USERNAME = xxxxxxx
 PASSWORD = xxxxxxxx
 HOST = localhost
 DATABASE = xxxxx
-``
+```
 ```
 [REACT]
 REACT_APP = http://localhost:3000 (https://betascreening.creatingwow.in/)

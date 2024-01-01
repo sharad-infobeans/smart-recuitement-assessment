@@ -70,11 +70,12 @@
 
   Now Update credentials in the demo-config.ini file [https://github.com/sharad-infobeans/smart-recuitement-assessment/blob/master/demo-config.ini] 
 
-  ```
+```
 [AppConfig]
 DIRECTORY_PATH = /var/www/html/Ib-Investors-report/data/
 SECRET_KEY = mysecret
 OPENAI_API_KEY = REPLACE_ME_YOUR_OPENAI_SECRET_KEY
+```
 ```
 [Google]
 GOOGLE_CLIENT_ID = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -82,6 +83,7 @@ GOOGLE_CLIENT_SECRET = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 GOOGLE_ENV_LOCAL = True
 GOOGLE_SCOPE = profile email
 GOOGLE_CLIENT_ID_JWT = xxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
 ```
 [Mail]
 MAIL_SERVER = smtp.gmail.com
@@ -91,11 +93,13 @@ MAIL_PASSWORD = xxxxxxxxxxxxxxxxxxx
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 ```
+```
 [Database]
 USERNAME = xxxxxxx
 PASSWORD = xxxxxxxx
 HOST = localhost
 DATABASE = xxxxx
+``
 ```
 [REACT]
 REACT_APP = http://localhost:3000 (https://betascreening.creatingwow.in/)

@@ -144,6 +144,10 @@ Final step:  python app.py
   flask run
   ```
 
+Important Note:
 
+Please remember following points if you setup this on local machine
+
+1) Python version should be 3.10.1 or 3.10
 
 - ##### Note\*: Restart the server after installation of all modules

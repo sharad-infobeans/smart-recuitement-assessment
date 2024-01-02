@@ -18,12 +18,12 @@
 - Install conda before proceeding to further step
 - for installation in ubuntu refer this doc https://docs.anaconda.com/free/anaconda/install/linux/
 - 
-  Now After successfull installation Create the conda enviroment for the project
+  Now After successfull installation Create the conda enviroment for the project with python 3.10.1
   ```shell
-  conda create -n ENV_NAME flask
+  conda create -n your_env_name python=3.10.1 
   ```
   ````shell
-  conda activate ENV_NAME
+  conda activate your_env_name
     ```
   To check existing Environment list.
   ````

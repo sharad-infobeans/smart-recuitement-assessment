@@ -219,7 +219,7 @@ def interview_video_upload():
                 audio_file = None
 
             candidate = Candidate(
-                name=name, interview_video=video_url, interview_audio=audio_output_path, added_by=current_user_ob['id'])
+                name=name, interview_video=video_url, interview_audio=audio_output_path, added_by=current_user_ob['id'],source_id=None, mobile="", email="", skills="", experience="", datetime=datetime.now(), file="", descriptions="")
             db.session.add(candidate)
             db.session.commit()
             # Create a MasterTable instance and associate candidate and transcript IDs

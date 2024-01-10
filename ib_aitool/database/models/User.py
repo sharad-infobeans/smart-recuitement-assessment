@@ -20,17 +20,19 @@ class User(db.Model, UserMixin):
     role_id = db.Column(db.Integer, default=0, nullable=True)
     full_name = db.Column(db.String(256), default=None, nullable=True)
     is_logged_in = db.Column(db.Boolean,default=False)
+    profile_photo = db.Column(db.VARCHAR(1000), default=None)
 
     def __str__(self):
         return str(self.username)
 
-    def __init__(self, email, username, password,is_logged_in,full_name=None,role_id=None):
+    def __init__(self, email, username, password,is_logged_in,profile_photo,full_name=None,role_id=None):
         self.email = email
         self.username = username
         self.password_hash = generate_password_hash(password)
         self.role_id = role_id
         self.full_name = full_name
         self.is_logged_in = is_logged_in
+        self.profile_photo = profile_photo
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)

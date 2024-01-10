@@ -69,7 +69,9 @@ def create_user():
 			role_id=2,
 			password="",
 			full_name=data['full_name'],
-			is_logged_in=data['is_logged_in'])
+			is_logged_in=data['is_logged_in'],
+			profile_photo= "")
+			
 			db.session.add(user)
 			db.session.commit()
 

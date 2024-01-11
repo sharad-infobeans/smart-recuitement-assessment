@@ -22,6 +22,11 @@ Interview Assessment {% endblock %} {% block page_body_title %} {% endblock %}
 <div class="row">
   <div class="card mt-4">
     <div class="card-body">
+      {% with messages = get_flashed_messages() %} {% if messages %} {% for
+      message in messages %}
+      <span class="badge not_generated">{{ message }}</span>
+      {% endfor %} {% endif %} {% endwith %}
+
       <div class="m-4">
         <!-- Using Flexbox to align elements in a row -->
         <div class="main_buttons_wrapper">

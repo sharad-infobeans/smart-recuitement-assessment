@@ -68,6 +68,7 @@ function goBack() {
                         class="form-control" placeholder="Enter Interviewer Name" required />
 
                       <input hidden="true" type="file" name="file" id="file" required accept="video/*" onchange="updateFileName(this)"/>
+                      <input type="hidden" id="candidate_email" name="candidate_email" value=""/>
                       </br></br>
                       <div class="row">
                         <div class="col-md-12 center">
@@ -125,6 +126,13 @@ function goBack() {
           // Set the input field value
           if (candidateName !== null) {
               document.getElementById('candidate_name').value = candidateName;
+          }
+
+          const candidateEmail = getQueryVariable('candidate_email');
+
+          // Set the input field value
+          if (candidateEmail !== null) {
+              document.getElementById('candidate_email').value = candidateEmail;
           }
           $(document).ready(function () {
             reload_candidate_list();

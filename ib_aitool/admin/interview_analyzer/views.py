@@ -191,8 +191,19 @@ def interview_video_upload():
 
     if request.method == 'POST':
         name = request.form.get('candidate_name')
+        email = request.form.get('candidate_email')
+
+        if email != '':
+            email_condition = Candidate.email == email
+            candidateObj = Candidate.query.filter(email_condition).all()
+            for candidate in candidateObj:
+                print(type(candidate.interview_video))
+                if candidate.interview_video != None:
+                    flash('Video Already exists for the mentioned candidate')
+                    return redirect(url_for('interview_analyzer.index'))
+
         video_url = upload_video()
-        # print(video_url)
+
         if video_url ==None:
             return redirect(url_for('interview_analyzer.interview_video_upload_file'))
         if video_url.startswith('/'):
@@ -218,8 +229,15 @@ def interview_video_upload():
             else:
                 audio_file = None
 
-            candidate = Candidate(
-                name=name, interview_video=video_url, interview_audio=audio_output_path, added_by=current_user_ob['id'],source_id=None, mobile="", email="", skills="", experience="", datetime=datetime.now(), file="", descriptions="")
+            if email != '':
+                for candidate in candidateObj:
+                    candidate.name = name
+                    candidate.interview_video = video_url
+                    candidate.interview_audio=audio_output_path
+                    candidate.added_by=current_user_ob['id']
+            else:
+                candidate = Candidate(
+                    name=name, interview_video=video_url, interview_audio=audio_output_path, added_by=current_user_ob['id'])
             db.session.add(candidate)
             db.session.commit()
             # Create a MasterTable instance and associate candidate and transcript IDs
